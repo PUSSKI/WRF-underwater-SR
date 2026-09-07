@@ -1,0 +1,47 @@
+name: test_UWEnhance
+model_type: ImageRestorationModel
+scale: 1
+num_gpu: 1
+manual_seed: 10
+
+datasets:
+  test_1:
+    name: ufo120-enhance-test-x4up
+    type: PairedImageDataset
+    dataroot_gt: E:/MBY/data/reference-890
+    dataroot_lq: E:/MBY/data/raw-890
+    meta_info_file: ~
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+network_g:
+  type: UWEnhance
+  img_channel: 3
+  width: 40
+  low_blk_num: 3
+  high_blk_num: 4
+  middle_blk_num: 3
+  enc_blk_nums: [1, 2, 2, 3]
+  dec_blk_nums: [1, 1, 1, 2]
+  high_boost: 0.25
+  enhance_residual_scale: 0.08
+
+path:
+  pretrain_network_g: experiments/UWEnhance/models/net_g_best.pth
+  strict_load_g: true
+
+val:
+  save_img: true
+  grids: false
+  rgb2bgr: true
+  use_image: true
+  metrics:
+    psnr:
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: false
+    ssim:
+      type: calculate_external_rgb_ssim
+      crop_border: 0
+      test_y_channel: false
